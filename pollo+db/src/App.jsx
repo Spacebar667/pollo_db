@@ -1,6 +1,31 @@
 import React, { useState, useEffect } from "react";
-import { Button, TextField, Card, CardContent, Typography, Select, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
-import { collection, addDoc, getDocs, query, where, updateDoc, doc } from "firebase/firestore";
+import {
+  Button,
+  TextField,
+  Card,
+  CardContent,
+  Typography,
+  Select,
+  MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Grid,
+  Paper,
+  Container,
+  Box,
+  Divider
+} from "@mui/material";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  updateDoc,
+  doc
+} from "firebase/firestore";
 import db from "./firebaseconfig";
 
 const products = [
@@ -16,7 +41,7 @@ const paymentMethods = ["Efectivo", "Tarjeta de crédito", "Transferencia bancar
 const ChickenStore = () => {
   const [cart, setCart] = useState([]);
   const [user, setUser] = useState(null);
-  const [userDocId, setUserDocId] = useState(null); // Nuevo estado para guardar el ID del documento del usuario
+  const [userDocId, setUserDocId] = useState(null);
   const [search, setSearch] = useState("");
   const [registering, setRegistering] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", phone: "", password: "" });
@@ -24,10 +49,9 @@ const ChickenStore = () => {
   const [order, setOrder] = useState({ city: "", paymentMethod: "" });
   const [orders, setOrders] = useState([]);
   const [showCart, setShowCart] = useState(false);
-  const [editDialogOpen, setEditDialogOpen] = useState(false); // Estado para controlar el diálogo de edición
-  const [editUserData, setEditUserData] = useState({ name: "", email: "", phone: "", password: "" }); // Datos editables del usuario
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editUserData, setEditUserData] = useState({ name: "", email: "", phone: "", password: "" });
 
-  // Leer pedidos desde Firebase
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -62,7 +86,7 @@ const ChickenStore = () => {
         const usersCollection = collection(db, "users");
         const docRef = await addDoc(usersCollection, formData);
         setUser({ name: formData.name, email: formData.email, phone: formData.phone });
-        setUserDocId(docRef.id); // Guardar el ID del documento del usuario
+        setUserDocId(docRef.id);
         setRegistering(false);
         alert("Registro exitoso!");
       } catch (error) {
@@ -85,9 +109,8 @@ const ChickenStore = () => {
           const userDoc = querySnapshot.docs[0];
           const userData = userDoc.data();
           setUser({ name: userData.name, email: userData.email, phone: userData.phone });
-          setUserDocId(userDoc.id); // Guardar el ID del documento del usuario
+          setUserDocId(userDoc.id);
           
-          // Preparar datos para edición
           setEditUserData({
             name: userData.name,
             email: userData.email,
@@ -118,7 +141,6 @@ const ChickenStore = () => {
         const userDocRef = doc(db, "users", userDocId);
         await updateDoc(userDocRef, editUserData);
         
-        // Actualizar el estado del usuario con los nuevos datos
         setUser({
           name: editUserData.name,
           email: editUserData.email,
@@ -162,194 +184,343 @@ const ChickenStore = () => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <Typography variant="h4" style={{ color: "#d35400", textAlign: "center" }}>🐔 Venta de Pollos Online</Typography>
+    <Container maxWidth="md" style={{ padding: "20px" }}>
+      <Paper elevation={3} style={{ padding: "20px", marginBottom: "20px" }}>
+        <Typography variant="h4" style={{ color: "#d35400", textAlign: "center", marginBottom: "20px" }}>
+          🐔 Venta de Pollos Online
+        </Typography>
 
-      {!user ? (
-        <div style={{ textAlign: "center", marginBottom: "20px" }}>
-          {registering ? (
-            <div>
-              <TextField label="Nombre" fullWidth margin="normal" onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
-              <TextField label="Correo" type="email" fullWidth margin="normal" onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
-              <TextField label="Teléfono" type="tel" fullWidth margin="normal" onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
-              <TextField label="Contraseña" type="password" fullWidth margin="normal" onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
-              <Button variant="contained" color="primary" onClick={register} style={{ marginTop: "10px" }}>Registrarse</Button>
-              <Button variant="text" color="secondary" onClick={() => setRegistering(false)}>Cancelar</Button>
-            </div>
-          ) : (
-            <div>
-              <TextField label="Correo" type="email" fullWidth margin="normal" onChange={(e) => setLoginData({ ...loginData, email: e.target.value })} />
-              <TextField label="Contraseña" type="password" fullWidth margin="normal" onChange={(e) => setLoginData({ ...loginData, password: e.target.value })} />
-              <Button variant="contained" color="primary" onClick={login}>Iniciar Sesión</Button>
-              <Button variant="contained" color="secondary" onClick={() => setRegistering(true)}>Registrarse</Button>
-            </div>
-          )}
-        </div>
-      ) : (
-        <div style={{ textAlign: "center", marginBottom: "20px" }}>
-          <Typography variant="h6">Bienvenido, {user.name}!</Typography>
-          <Typography>Correo: {user.email}</Typography>
-          <Typography>Teléfono: {user.phone}</Typography>
-          <div style={{ marginTop: "10px" }}>
-            <Button variant="contained" color="primary" onClick={handleEditUser} style={{ marginRight: "10px" }}>
-              Editar mis datos
+        {!user ? (
+          <Box style={{ textAlign: "center", marginBottom: "20px" }}>
+            {registering ? (
+              <Box>
+                <TextField
+                  label="Nombre"
+                  fullWidth
+                  margin="normal"
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                />
+                <TextField
+                  label="Correo"
+                  type="email"
+                  fullWidth
+                  margin="normal"
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                />
+                <TextField
+                  label="Teléfono"
+                  type="tel"
+                  fullWidth
+                  margin="normal"
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                />
+                <TextField
+                  label="Contraseña"
+                  type="password"
+                  fullWidth
+                  margin="normal"
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={register}
+                  style={{ marginTop: "10px", marginRight: "10px" }}
+                >
+                  Registrarse
+                </Button>
+                <Button variant="outlined" onClick={() => setRegistering(false)}>
+                  Cancelar
+                </Button>
+              </Box>
+            ) : (
+              <Box>
+                <TextField
+                  label="Correo"
+                  type="email"
+                  fullWidth
+                  margin="normal"
+                  onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+                />
+                <TextField
+                  label="Contraseña"
+                  type="password"
+                  fullWidth
+                  margin="normal"
+                  onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={login}
+                  style={{ marginRight: "10px", marginTop: "10px" }}
+                >
+                  Iniciar Sesión
+                </Button>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => setRegistering(true)}
+                  style={{ marginTop: "10px" }}
+                >
+                  Registrarse
+                </Button>
+              </Box>
+            )}
+          </Box>
+        ) : (
+          <Box style={{ textAlign: "center", marginBottom: "20px" }}>
+            <Typography variant="h6">Bienvenido, {user.name}!</Typography>
+            <Typography>Correo: {user.email}</Typography>
+            <Typography>Teléfono: {user.phone}</Typography>
+            <Box style={{ marginTop: "10px" }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleEditUser}
+                style={{ marginRight: "10px" }}
+              >
+                Editar mis datos
+              </Button>
+              <Button variant="contained" color="error" onClick={() => setUser(null)}>
+                Cerrar sesión
+              </Button>
+            </Box>
+          </Box>
+        )}
+
+        <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
+          <DialogTitle>Editar mis datos</DialogTitle>
+          <DialogContent>
+            <TextField
+              label="Nombre"
+              fullWidth
+              margin="normal"
+              value={editUserData.name}
+              onChange={(e) => setEditUserData({ ...editUserData, name: e.target.value })}
+            />
+            <TextField
+              label="Correo"
+              type="email"
+              fullWidth
+              margin="normal"
+              value={editUserData.email}
+              onChange={(e) => setEditUserData({ ...editUserData, email: e.target.value })}
+            />
+            <TextField
+              label="Teléfono"
+              type="tel"
+              fullWidth
+              margin="normal"
+              value={editUserData.phone}
+              onChange={(e) => setEditUserData({ ...editUserData, phone: e.target.value })}
+            />
+            <TextField
+              label="Contraseña"
+              type="password"
+              fullWidth
+              margin="normal"
+              value={editUserData.password}
+              onChange={(e) => setEditUserData({ ...editUserData, password: e.target.value })}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseEditDialog}>Cancelar</Button>
+            <Button onClick={handleSaveUserData} color="primary">
+              Guardar cambios
             </Button>
-            <Button variant="contained" color="error" onClick={() => setUser(null)}>
-              Cerrar sesión
-            </Button>
-          </div>
-        </div>
-      )}
+          </DialogActions>
+        </Dialog>
+      </Paper>
 
-      {/* Diálogo para editar datos del usuario */}
-      <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
-        <DialogTitle>Editar mis datos</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Nombre"
-            fullWidth
-            margin="normal"
-            value={editUserData.name}
-            onChange={(e) => setEditUserData({ ...editUserData, name: e.target.value })}
-          />
-          <TextField
-            label="Correo"
-            type="email"
-            fullWidth
-            margin="normal"
-            value={editUserData.email}
-            onChange={(e) => setEditUserData({ ...editUserData, email: e.target.value })}
-          />
-          <TextField
-            label="Teléfono"
-            type="tel"
-            fullWidth
-            margin="normal"
-            value={editUserData.phone}
-            onChange={(e) => setEditUserData({ ...editUserData, phone: e.target.value })}
-          />
-          <TextField
-            label="Contraseña"
-            type="password"
-            fullWidth
-            margin="normal"
-            value={editUserData.password}
-            onChange={(e) => setEditUserData({ ...editUserData, password: e.target.value })}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseEditDialog}>Cancelar</Button>
-          <Button onClick={handleSaveUserData} color="primary">Guardar cambios</Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Botón para mostrar/ocultar el carrito */}
       {cart.length > 0 && (
-        <Button 
-          variant="contained" 
-          color="secondary" 
-          onClick={() => setShowCart(!showCart)}
-          style={{ marginBottom: "20px" }}
-        >
-          {showCart ? "Ocultar Carrito" : `Ver Carrito (${cart.length})`}
-        </Button>
+        <Box style={{ textAlign: "center", marginBottom: "20px" }}>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => setShowCart(!showCart)}
+            style={{ marginBottom: "20px" }}
+          >
+            {showCart ? "Ocultar Carrito" : `Ver Carrito (${cart.length})`}
+          </Button>
+        </Box>
       )}
 
-      {/* Sección del carrito */}
       {showCart && cart.length > 0 && (
-        <Card style={{ marginBottom: "20px", backgroundColor: "#f8f9fa" }}>
-          <CardContent>
-            <Typography variant="h5" style={{ marginBottom: "15px" }}>🛒 Tu Carrito de Compras</Typography>
-            
-            {cart.map((item, index) => (
-              <div key={index} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <Typography variant="h6" style={{ marginRight: "10px" }}>{item.image}</Typography>
-                  <Typography>{item.name}</Typography>
-                </div>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <Typography style={{ marginRight: "15px" }}>${item.price.toLocaleString()} COP</Typography>
-                  <Button 
-                    variant="outlined" 
-                    color="error" 
-                    size="small"
-                    onClick={() => removeFromCart(index)}
-                  >
-                    Eliminar
-                  </Button>
-                </div>
-              </div>
-            ))}
-            
-            <div style={{ borderTop: "1px solid #ddd", paddingTop: "15px", marginTop: "15px" }}>
-              <Typography variant="h6" style={{ textAlign: "right" }}>
-                Total a Pagar: <span style={{ color: "#d35400" }}>${calculateTotal().toLocaleString()} COP</span>
-              </Typography>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      <Typography variant="h6">Productos:</Typography>
-      {products.map((product) => (
-        <Card key={product.id} style={{ marginBottom: "10px", padding: "10px" }}>
-          <CardContent style={{ textAlign: "center" }}>
-            <Typography variant="h4">{product.image}</Typography>
-            <Typography variant="h6">{product.name}</Typography>
-            <Typography color="textSecondary">${product.price.toLocaleString()} COP</Typography>
-            <Button
-              variant="contained"
-              onClick={() => addToCart(product)}
-              style={{ marginTop: "10px" }}
+        <Paper elevation={3} style={{ marginBottom: "20px", padding: "20px" }}>
+          <Typography variant="h5" style={{ marginBottom: "15px", textAlign: "center" }}>
+            🛒 Tu Carrito de Compras
+          </Typography>
+          
+          {cart.map((item, index) => (
+            <Box
+              key={index}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "10px",
+                padding: "10px",
+                backgroundColor: "#f8f9fa",
+                borderRadius: "4px"
+              }}
             >
-              🛒 Agregar al carrito
-            </Button>
-          </CardContent>
-        </Card>
-      ))}
-
-      <Typography variant="h6">Ciudades:</Typography>
-      <Select fullWidth value={order.city} onChange={(e) => setOrder({ ...order, city: e.target.value })}>
-        {cities.map((city) => (
-          <MenuItem key={city} value={city}>{city}</MenuItem>
-        ))}
-      </Select>
-
-      <Typography variant="h6">Método de Pago:</Typography>
-      <Select fullWidth value={order.paymentMethod} onChange={(e) => setOrder({ ...order, paymentMethod: e.target.value })}>
-        {paymentMethods.map((method) => (
-          <MenuItem key={method} value={method}>{method}</MenuItem>
-        ))}
-      </Select>
-
-      <Button 
-        variant="contained" 
-        color="primary" 
-        onClick={placeOrder} 
-        style={{ marginTop: "10px" }}
-        disabled={cart.length === 0}
-      >
-        Realizar Pedido
-      </Button>
-
-      <Typography variant="h6" style={{ marginTop: "20px" }}>Pedidos:</Typography>
-      {orders.length > 0 ? (
-        orders.map((order, index) => (
-          <Card key={index} style={{ marginBottom: "10px", padding: "10px" }}>
-            <CardContent>
-              <Typography variant="h6">Pedido #{index + 1}</Typography>
-              <Typography>Cliente: {order.user.name}</Typography>
-              <Typography>Email: {order.user.email}</Typography>
-              <Typography>Ciudad: {order.city}</Typography>
-              <Typography>Método de Pago: {order.paymentMethod}</Typography>
-              <Typography>Total: ${order.total.toLocaleString()} COP</Typography>
-            </CardContent>
-          </Card>
-        ))
-      ) : (
-        <Typography>No hay pedidos registrados</Typography>
+              <Box style={{ display: "flex", alignItems: "center" }}>
+                <Typography variant="h6" style={{ marginRight: "10px" }}>
+                  {item.image}
+                </Typography>
+                <Typography>{item.name}</Typography>
+              </Box>
+              <Box style={{ display: "flex", alignItems: "center" }}>
+                <Typography style={{ marginRight: "15px" }}>
+                  ${item.price.toLocaleString()} COP
+                </Typography>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  size="small"
+                  onClick={() => removeFromCart(index)}
+                >
+                  Eliminar
+                </Button>
+              </Box>
+            </Box>
+          ))}
+          
+          <Divider style={{ margin: "15px 0" }} />
+          
+          <Typography variant="h6" style={{ textAlign: "right" }}>
+            Total a Pagar:{" "}
+            <span style={{ color: "#d35400" }}>
+              ${calculateTotal().toLocaleString()} COP
+            </span>
+          </Typography>
+        </Paper>
       )}
-    </div>
+
+      <Paper elevation={3} style={{ padding: "20px", marginBottom: "20px" }}>
+        <Typography variant="h5" style={{ textAlign: "center", marginBottom: "20px" }}>
+          Nuestros Productos
+        </Typography>
+        
+        <Grid container spacing={3}>
+          {products.map((product) => (
+            <Grid item xs={12} sm={6} md={3} key={product.id}>
+              <Card style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+                <CardContent style={{ textAlign: "center", flexGrow: 1 }}>
+                  <Typography variant="h2" style={{ marginBottom: "10px" }}>
+                    {product.image}
+                  </Typography>
+                  <Typography variant="h6" style={{ marginBottom: "5px" }}>
+                    {product.name}
+                  </Typography>
+                  <Typography color="textSecondary" style={{ marginBottom: "15px" }}>
+                    ${product.price.toLocaleString()} COP
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => addToCart(product)}
+                    fullWidth
+                  >
+                    🛒 Agregar al carrito
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Paper>
+
+      <Paper elevation={3} style={{ padding: "20px", marginBottom: "20px" }}>
+        <Typography variant="h5" style={{ textAlign: "center", marginBottom: "20px" }}>
+          Información del Pedido
+        </Typography>
+        
+        <Box style={{ marginBottom: "20px" }}>
+          <Typography variant="h6" style={{ marginBottom: "10px" }}>
+            Ciudad de Entrega:
+          </Typography>
+          <Select
+            fullWidth
+            value={order.city}
+            onChange={(e) => setOrder({ ...order, city: e.target.value })}
+          >
+            {cities.map((city) => (
+              <MenuItem key={city} value={city}>
+                {city}
+              </MenuItem>
+            ))}
+          </Select>
+        </Box>
+        
+        <Box style={{ marginBottom: "20px" }}>
+          <Typography variant="h6" style={{ marginBottom: "10px" }}>
+            Método de Pago:
+          </Typography>
+          <Select
+            fullWidth
+            value={order.paymentMethod}
+            onChange={(e) => setOrder({ ...order, paymentMethod: e.target.value })}
+          >
+            {paymentMethods.map((method) => (
+              <MenuItem key={method} value={method}>
+                {method}
+              </MenuItem>
+            ))}
+          </Select>
+        </Box>
+        
+        <Box style={{ textAlign: "center" }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={placeOrder}
+            style={{ marginTop: "10px" }}
+            disabled={cart.length === 0}
+            size="large"
+          >
+            Realizar Pedido
+          </Button>
+        </Box>
+      </Paper>
+
+      <Paper elevation={3} style={{ padding: "20px" }}>
+        <Typography variant="h5" style={{ textAlign: "center", marginBottom: "20px" }}>
+          Historial de Pedidos
+        </Typography>
+        
+        {orders.length > 0 ? (
+          orders.map((order, index) => (
+            <Card
+              key={index}
+              style={{
+                marginBottom: "15px",
+                padding: "15px",
+                backgroundColor: "#f8f9fa"
+              }}
+            >
+              <CardContent>
+                <Typography variant="h6" style={{ color: "#d35400" }}>
+                  Pedido #{index + 1}
+                </Typography>
+                <Typography>Cliente: {order.user.name}</Typography>
+                <Typography>Email: {order.user.email}</Typography>
+                <Typography>Ciudad: {order.city}</Typography>
+                <Typography>Método de Pago: {order.paymentMethod}</Typography>
+                <Typography>
+                  Total: <strong>${order.total.toLocaleString()} COP</strong>
+                </Typography>
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <Typography style={{ textAlign: "center" }}>
+            No hay pedidos registrados
+          </Typography>
+        )}
+      </Paper>
+    </Container>
   );
 };
 
